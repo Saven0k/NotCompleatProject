@@ -1,0 +1,28 @@
+.menu_select {
+    
+    position: relative;
+
+    .select_city {
+        padding: 3px 5px;
+    }
+
+}
+
+.info_block {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    .city_block {
+        display: flex;
+        gap: 10px;  
+        align-items: center;
+    }
+}
+
+.button_city {
+    padding: 3px 5px;
+    font-size: 14px;
+    background-color: #fff;
+
+}

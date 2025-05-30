@@ -1,0 +1,40 @@
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
+
+export default defineConfig({
+	plugins: [react()],
+	server: {
+		proxy: {
+			"/api/posts": "https://hexletkb.ru:5002",
+			"/api/posts/add": "https://hexletkb.ru:5002",
+			"/api/posts/update": "https://hexletkb.ru:5002",
+			"/api/posts/visible": "https://hexletkb.ru:5002",
+			"/api/posts/for": "https://hexletkb.ru:5002",
+			"/api/student/groups": "https://hexletkb.ru:5002",
+			"/api/posts/delete": "https://hexletkb.ru:5002",
+			"/api/users": "https://hexletkb.ru:5002",
+			"/api/users/add": "https://hexletkb.ru:5002",
+			"/api/users/update": "https://hexletkb.ru:5002",
+			"/api/users/delete": "https://hexletkb.ru:5002",
+			"/api/users/find": "https://hexletkb.ru:5002",
+			'/api/teacher/visit/all':  "https://hexletkb.ru:5002",
+			'/api/teacher/visit/update':  "https://hexletkb.ru:5002",
+			'/api/teacher/visitors':  "https://hexletkb.ru:5002",
+			'/api/visitors':  "https://hexletkb.ru:5002",
+			'/api/visitors/add':  "https://hexletkb.ru:5002",
+			'/api/posts/public/role':  "https://hexletkb.ru:5002",
+			'/api/visitors/all':  "https://hexletkb.ru:5002",
+			'/api/cities':  "https://hexletkb.ru:5002",
+			'/api/cities/delete/:id':  "https://hexletkb.ru:5002",
+			'/api/cities/new':  "https://hexletkb.ru:5002",
+			'/api/cities/update':  "https://hexletkb.ru:5002",
+			'/api/roles/update':  "https://hexletkb.ru:5002",
+			'/api/roles/delete/:id':  "https://hexletkb.ru:5002",
+			'/api/roles/new':  "https://hexletkb.ru:5002",
+			'/api/roles':  "https://hexletkb.ru:5002",
+			'api/posts/status/context':  "https://hexletkb.ru:5002",
+			'api/posts/update/status':  "https://hexletkb.ru:5002",
+			'api/posts/image':  "https://hexletkb.ru:5002",
+		},
+	},
+});
