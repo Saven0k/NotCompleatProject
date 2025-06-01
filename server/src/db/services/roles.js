@@ -1,4 +1,4 @@
-const db = require('../db');
+const db = require('../db'); // Получаем pool соединений MySQL
 const generateUniqueId = require('../utils/generateUniqueId');
 
 /**
@@ -7,20 +7,14 @@ const generateUniqueId = require('../utils/generateUniqueId');
  * @throws {Error} Если произошла ошибка при запросе к базе данных
  */
 async function getRoles() {
-    const sql = `SELECT * FROM roles`;
-
-    return new Promise((resolve, reject) => {
-        db.all(sql, function (err, rows) {
-            if (err) {
-                console.error("Ошибка базы данных:", err.message);
-                return reject(new Error("Ошибка вывода всех ролей"));
-            }
-            resolve(rows);
-        });
-    });
+    try {
+        const [rows] = await db.query('SELECT * FROM roles');
+        return rows;
+    } catch (err) {
+        console.error("Ошибка базы данных:", err.message);
+        throw new Error("Ошибка вывода всех ролей");
+    }
 }
-
-
 
 /**
  * Добавляет новую роль в базу данных.
@@ -30,20 +24,22 @@ async function getRoles() {
  */
 async function addRole(roleName) {
     const roleId = generateUniqueId('role');
-    const sql = 'INSERT INTO roles (id, name) VALUES ( ?, ? )'
-    return new Promise((resolve, reject) => {
-        db.run(sql, [roleId, roleName], function (err) {
-            if (err) {
-                console.error('Ошибка базы данных:', err.message);
-                return reject(new Error('Ошибка добавления роли'));
-            }
-            console.log("Role added:", roleName);
-            resolve({
-                roleId: roleId,
-                roleName, role: roleName
-            })
-        })
-    })
+    try {
+        const [result] = await db.query(
+            'INSERT INTO roles (id, name) VALUES (?, ?)',
+            [roleId, roleName]
+        );
+        
+        console.log("Role added:", roleName);
+        return {
+            roleId: roleId,
+            roleName: roleName,
+            role: roleName
+        };
+    } catch (err) {
+        console.error('Ошибка базы данных:', err.message);
+        throw new Error('Ошибка добавления роли');
+    }
 }
 
 /**
@@ -54,33 +50,34 @@ async function addRole(roleName) {
  * @throws {Error} Если произошла ошибка при обновлении или роль не найдена
  */
 async function updateRole(id, role) {
-    const updateSql = `UPDATE roles SET name = ? WHERE id = ?`;
+    try {
+        // Обновляем роль
+        const [updateResult] = await db.query(
+            'UPDATE roles SET name = ? WHERE id = ?',
+            [role, id]
+        );
 
-    // Обновляем пост и затем получаем обновленные данные
-    return new Promise((resolve, reject) => {
-        db.serialize(() => {
-            // Выполняем обновление
-            db.run(updateSql, [role, id], function (err) {
-                if (err) {
-                    console.error("Ошибка базы данных при обновлении:", err.message);
-                    return reject(new Error("Ошибка обновления роли"));
-                }
+        // Проверяем, была ли обновлена хотя бы одна запись
+        if (updateResult.affectedRows === 0) {
+            throw new Error("Роль не найдена");
+        }
 
-                // После успешного обновления получаем обновленный пост
-                db.get(`SELECT * FROM roles WHERE id = ?`, [id], (err, row) => {
-                    if (err) {
-                        console.error("Ошибка базы данных при получении обновленной роли:", err.message);
-                        return reject(new Error("Ошибка при получении обновленной роли"));
-                    }
-                    if (!row) {
-                        return reject(new Error("Роль не найдена после обновления"));
-                    }
-                    console.log("Роль обновлена и возвращена");
-                    resolve(row);
-                });
-            });
-        });
-    });
+        // Получаем обновленные данные
+        const [rows] = await db.query(
+            'SELECT * FROM roles WHERE id = ?',
+            [id]
+        );
+
+        if (!rows.length) {
+            throw new Error("Роль не найдена после обновления");
+        }
+
+        console.log("Роль обновлена и возвращена");
+        return rows[0];
+    } catch (err) {
+        console.error("Ошибка базы данных:", err.message);
+        throw new Error(err.message || "Ошибка обновления роли");
+    }
 }
 
 /**
@@ -90,19 +87,22 @@ async function updateRole(id, role) {
  * @throws {Error} Если произошла ошибка при удалении роли
  */
 async function deleteRole(id) {
-    const sql = "DELETE FROM roles WHERE id = ?";
+    try {
+        const [result] = await db.query(
+            'DELETE FROM roles WHERE id = ?',
+            [id]
+        );
 
-    return new Promise((resolve, reject) => {
-        db.run(sql, [id], (err) => {
-            if (err) {
-                console.error("Ошибка базы данных:", err.message);
-                reject(new Error("Ошибка удаление роли с id: ", id));
-            } else {
-                console.log(`РОль с id ${id} удалена`);
-                resolve("OK");
-            }
-        });
-    });
+        if (result.affectedRows === 0) {
+            throw new Error("Роль не найдена");
+        }
+
+        console.log(`Роль с id ${id} удалена`);
+        return "OK";
+    } catch (err) {
+        console.error("Ошибка базы данных:", err.message);
+        throw new Error(`Ошибка удаления роли с id: ${id}`);
+    }
 }
 
 module.exports = {
@@ -110,4 +110,4 @@ module.exports = {
     addRole,
     updateRole,
     deleteRole,
-}
+};

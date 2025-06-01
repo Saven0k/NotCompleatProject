@@ -51,7 +51,7 @@ export async function getPost(id) {
 export async function getPostsByContextByRoleByStatus(role, role_context, status) {
     try {
         
-        const response = await fetch("http://hexletkb.ru:5002/api/posts/status/context", {
+        const response = await fetch("https://hexletkb.ru:5002/api/posts/status/context", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ role, role_context, status })
