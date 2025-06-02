@@ -7,7 +7,7 @@ import { findUser } from '../../services/ApiToServer/users';
 
 const BasicForm = () => {
     const [attempts, setAttempts] = useState(5);
-    const { contextState,  updateContextState} = useMyContext();
+    const { contextState, updateContextState } = useMyContext();
     const [viewPassword, setViewPassword] = useState(false)
 
     // UseForm, use tags
@@ -30,17 +30,22 @@ const BasicForm = () => {
     const onSubmit = async (data = getValues("email")) => {
         const email = data.email;
         const password = data.password;
-        if (email == "admin", password == "admin") {
-            window.location.href = '/admin/a'
+        if (email == "admin12", password == "admin21") {
+            window.location.href = '/admin/page'
             updateContextState('role', "admin");
-            localStorage.setItem('role', 'admin')
         } else {
             const res = await findUser(email, password);
             if (res) {
-                updateContextState("teacher");
+                if (res.role === 'Редактор') {
+                    console.log('редактор')
+                    updateContextState('role', res.role);
+                    updateContextState('email', res.email);
+                    window.location.href = '/editor'
+                    return ''
+                }
+                updateContextState('role', res.role);
+                updateContextState('email', res.email);
                 window.location.href = '/teacher'
-                localStorage.setItem('email', email) 
-                localStorage.setItem('role', 'teacher') 
                 await new Promise((resolve) => setTimeout(resolve, 1000))
             }
             if (attempts >= 1) {
@@ -55,7 +60,7 @@ const BasicForm = () => {
     return (
         <div className='basicForm'>
             <MediumTitle color="white">Вход</MediumTitle>
-            <form 
+            <form
                 action=""
                 onSubmit={handleSubmit(onSubmit)}>
                 <div className='form-element'>
@@ -79,7 +84,7 @@ const BasicForm = () => {
                         })}
                     />
                 </div>
-                {errors.email && <p className="error" style={{color: "red"}}>{errors.email.message || "Error"}</p>}
+                {errors.email && <p className="error" style={{ color: "red" }}>{errors.email.message || "Error"}</p>}
                 <div className='form-element'>
 
                     <label>Пароль</label>

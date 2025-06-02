@@ -9,6 +9,7 @@ import { MyProvider } from "./services/MyProvider/MyProvider";
 import { MyTheme } from "./services/MyThemeProvider/MyThemeProvider";
 import { CuratorPage } from './pages/CuratorPage';
 import PostPage from "./pages/PostPage";
+import EditorPage from "./pages/EditorPage";
 
 function App() {
 	return (
@@ -20,11 +21,12 @@ function App() {
 						<Route path="/post/:id" element={<PostPage />} />
 						<Route path="/teacher" element={<TeacherPage />} />
 						<Route path="/login" element={<LoginPage />} />
-						<Route path="/admin/a" element={<AdminPage />} />
+						<Route path="/admin/page" element={<AdminPage />} />
 						<Route path="/selection" element={<SelectionPage />} />
 						<Route path="*" element={<SelectionPage />} />
 						<Route path="/404" element={<ErrorPage />} />
-						<Route path="/curatorPage" element={<CuratorPage />} />					
+						<Route path="/curatorPage" element={<CuratorPage />} />
+						<Route path="/editor" element={<EditorPage />} />
 					</Routes>
 				</BrowserRouter>
 			</MyProvider>
